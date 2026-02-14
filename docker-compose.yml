@@ -1,0 +1,56 @@
+services:
+  prism:
+    build:
+      context: ./PRISM
+    image: prism:local
+    container_name: prism
+    network_mode: "service:simulator"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./PRISM:/opt/prism:ro
+    tty: true
+    restart: unless-stopped
+    depends_on:
+      - simulator
+    command: ./build/prism eth0
+
+  simulator:
+    build:
+      context: ./PRISM_simulator
+    image: prism_simulator:local
+    container_name: prism_simulator
+    networks:
+      sim_net: {}
+    volumes:
+      - ./PRISM_simulator:/opt/simulator:ro
+    tty: true
+    restart: unless-stopped
+    entrypoint: ["/bin/sh","-c","/usr/local/bin/scada-sim start-server modbus 502 & /usr/local/bin/scada-sim start-server dnp3 20000 & /usr/local/bin/scada-sim start-server iec104 2404 & wait"]
+
+  hmi:
+    build:
+      context: ./PRISM_simulator
+      dockerfile: hmi/Dockerfile
+    image: prism_hmi:local
+    container_name: hmi
+    networks:
+      - sim_net
+    tty: true
+    restart: "no"
+    ports:
+      - "9000:8080"    # expose only the client API on host:9000 -> container:8080
+    environment:
+      - TARGET_HOST=simulator
+    depends_on:
+      - simulator
+ 
+
+networks:
+  # Network carrying simulator <-> HMI (and generator). This network is published
+  # to the host via the simulator's ports so external tooling can perform mock
+  # attachments to the PLC.
+  sim_net:
+    driver: bridge
+
