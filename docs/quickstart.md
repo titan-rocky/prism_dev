@@ -79,5 +79,45 @@ The HMI exposes a REST API on `localhost:9000`:
 | `/health` | GET | — | Health check |
 | `/api/modbus/request` | POST | `{"fc":3, "count":5, "delay":1.0}` | Send Modbus requests |
 | `/api/dnp3/request` | POST | `{"fc":130, "count":5, "delay":0.5}` | Send DNP3 requests |
-| `/api/iec104/request` | POST | `{"fc":45, "count":5, "delay":0.5}` | Send IEC-104 requests |
 | `/api/generate` | POST | — | Run default traffic sequence |
+
+> **Note:** IEC-104 is supported at the protocol/detection level but has no dedicated REST endpoint. IEC-104 traffic can be injected directly using `scada-sim request iec104 2404 <type_id>` from inside the `hmi` container.
+
+## Running Tests
+
+### Prerequisites
+
+```bash
+pip install requests
+```
+
+### `test_cli.py` — Stateful Test CLI
+
+`test_cli.py` is the primary test runner. It assumes the Docker environment is already up (`docker compose up -d --build`) and keeps all containers running across scenarios, preserving state.
+
+```bash
+# List available scenarios
+python test_cli.py list
+
+# Run a single scenario by ID
+python test_cli.py run 1   # Baseline
+python test_cli.py run 2   # Reconnaissance
+python test_cli.py run 3   # Write Flood
+python test_cli.py run 4   # DNP3 Unsolicited
+python test_cli.py run 5   # Post-Lockout
+
+# Run all scenarios in sequence (continuous forensic evaluation)
+python test_cli.py run 0
+```
+
+After each scenario, logs are captured to `logs/scenario_<id>_<service>.log` for `prism`, `simulator`, and `hmi`. Running all scenarios with `run 0` additionally dumps a consolidated `logs/continuous_<service>.log`.
+
+### Resetting Between Manual Runs
+
+If scenario 3 or 5 has engaged the write-lock, reset it before the next run:
+
+```bash
+docker exec hmi ./scada-sim request modbus 502 5 65535 0
+```
+
+(`exec_demo.sh` does this automatically at startup.)

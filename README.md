@@ -11,9 +11,30 @@ An intrusion detection system for Industrial Control Systems (ICS) that passivel
 ## Quick Start
 
 ```bash
+# Start all containers
 docker compose up -d --build
+
+# Run the interactive demo (6 scenarios, keypress-paced)
 ./exec_demo.sh
 ```
+
+## Testing
+
+```bash
+# Install Python dependency
+pip install requests
+
+# List available test scenarios
+python test_cli.py list
+
+# Run a single scenario (containers must already be up)
+python test_cli.py run 3
+
+# Run the full forensic evaluation (all 5 scenarios, logs captured to logs/)
+python test_cli.py run 0
+```
+
+Logs are written to `logs/scenario_<id>_<service>.log`. See [Quickstart](docs/quickstart.md) for the full testing reference.
 
 ## Documentation
 
