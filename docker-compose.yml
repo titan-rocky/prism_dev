@@ -27,7 +27,9 @@ services:
       - ./PRISM_simulator:/opt/simulator:ro
     tty: true
     restart: unless-stopped
-    entrypoint: ["/bin/sh","-c","/usr/local/bin/scada-sim start-server modbus 502 & /usr/local/bin/scada-sim start-server dnp3 20000 & /usr/local/bin/scada-sim start-server iec104 2404 & wait"]
+    environment:
+      - ROLE=simulator
+    command: /usr/local/bin/sim-api
 
   hmi:
     build:
@@ -40,7 +42,7 @@ services:
     tty: true
     restart: "no"
     ports:
-      - "9000:8080"    # expose only the client API on host:9000 -> container:8080
+      - "9000:8080"
     environment:
       - TARGET_HOST=simulator
     depends_on:
@@ -48,9 +50,6 @@ services:
  
 
 networks:
-  # Network carrying simulator <-> HMI (and generator). This network is published
-  # to the host via the simulator's ports so external tooling can perform mock
-  # attachments to the PLC.
   sim_net:
     driver: bridge
 

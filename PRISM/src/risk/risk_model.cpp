@@ -39,6 +39,10 @@ namespace prism::risk {
                     decision.level = RiskLevel::High;
                     decision.escalate = true;
                     decision.restrictWrites = true;
+                } else if (!isOn_ && p_max > 0.4) {
+                    decision.level = RiskLevel::Medium;
+                    decision.escalate = false;
+                    decision.restrictWrites = false;
                 } else {
                     decision.level = RiskLevel::Low;
                     decision.escalate = false;

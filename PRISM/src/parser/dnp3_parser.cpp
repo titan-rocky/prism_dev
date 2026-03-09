@@ -16,7 +16,7 @@ namespace prism::parser {
                 const auto& b = packet.payload;
                 const size_t n = b.size();
 
-                if (n < 12) {
+                if (n < 13) {
                     rec.protocol = "Unknown";
                     return rec;
                 }
@@ -24,12 +24,13 @@ namespace prism::parser {
                 const uint8_t ctrl = b[2];
                 rec.isRequest = ((ctrl & 0x40) != 0);
 
-                rec.functionCode = b[6];
+                rec.functionCode = b[12];
 
                 rec.isWrite =
                     (rec.functionCode == 0x02 ||   // control relay output
                      rec.functionCode == 0x05 ||   // direct operate
-                     rec.functionCode == 0x06);    // select
+                     rec.functionCode == 0x06 ||   // select
+                     rec.functionCode == 0x82);    // unsolicited response (treated as write for risk)
 
                 rec.address = 0;
                 return rec;

@@ -1,4 +1,4 @@
-# PRISM — Passive Real-time ICS Security Monitor
+# PRISM — PASSIVE INTRUSION DETECTION SYSTEM FOR SCADA-OT NETWORKS
 
 An intrusion detection system for Industrial Control Systems (ICS) that passively sniffs SCADA network traffic, detects anomalies using streaming machine learning, and enforces write-lock protection using native Modbus safety coils.
 

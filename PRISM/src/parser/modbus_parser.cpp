@@ -29,7 +29,9 @@ namespace prism::parser {
 
                 rec.functionCode = b[pdu];
                 rec.address      = (b[pdu+1] << 8) | b[pdu+2];
-                rec.isWrite      = (rec.functionCode >= 5);
+                // Check if function code is a Write operation (5, 6, 15, 16)
+                rec.isWrite = (rec.functionCode == 5 || rec.functionCode == 6 || 
+                               rec.functionCode == 15 || rec.functionCode == 16);
 
                 return rec;
 

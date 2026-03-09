@@ -178,10 +178,10 @@ The enforcement engine tracks lock state internally (`locked_` flag). The FC5 si
 ## Docker Deployment
 
 ```
-┌─────────────────────────────────────┐
-│           sim_net (bridge)          │
-│                                     │
-│  ┌─────────────┐  ┌──────────────┐  │
+┌──────────────────────────────────────┐
+│            sim_net (bridge)          │
+│                                      │
+│  ┌──────────────┐  ┌──────────────┐  │
 │  │  simulator   │  │     hmi      │  │
 │  │  (PLC)       │  │  (client)    │  │
 │  │  Modbus:502  │  │  API:8080    │  │
@@ -193,7 +193,7 @@ The enforcement engine tracks lock state internally (`locked_` flag). The FC5 si
 │  │    prism     │                    │
 │  │  (IDS, eth0) │                    │
 │  └──────────────┘                    │
-└─────────────────────────────────────┘
+└──────────────────────────────────────┘
 ```
 
 PRISM uses `network_mode: service:simulator` to share the simulator's network namespace. This provides passive read access to all traffic via libpcap — equivalent to a network TAP — without being in the data path.
